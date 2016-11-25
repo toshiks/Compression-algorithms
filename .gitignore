@@ -8,3 +8,5 @@
 /src4.bmp
 /src4.jpg
 /src5.bmp
+/.gitattributes
+*.gitignore
