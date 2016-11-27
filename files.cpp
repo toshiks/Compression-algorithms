@@ -30,10 +30,15 @@ bitMap::HafmanTree::HafmanTree(long double f, int p, HafmanTree *l, HafmanTree *
     right = r;
 }
 
+int correlation(int a)
+{
+    return int(std::round(a/20)*20);
+}
+
 BMP::BMP( char * fileName )
 {
     using namespace bitMap;
-    FILE *f = fopen( fileName, "rb");
+    FILE *f = fopen( fileName, "rb" );
 
     head.bfType = read_u16( f );
     head.bfSize = read_u32( f );
@@ -64,10 +69,10 @@ BMP::BMP( char * fileName )
     for ( int i = 0; i < headInfo.biWidth; i++ ){
         for ( int j = 0; j < headInfo.biHeight; j++ ) {
             field[i][j] = (unsigned char) getc(f);
-            if (shades[int(std::round(field[i][j] / 20) * 20)] == 0)
+            if (shades[correlation(field[i][j])] == 0)
                 coun++;
 
-            shades[int(std::round(field[i][j] / 20) * 20)]++;
+            shades[correlation(field[i][j])]++;
 
         }
         getc( f );
@@ -387,7 +392,7 @@ void BMP::getUniformCodes( std::ofstream &out )
 
     for ( int i = 0; i < headInfo.biWidth; i++ ) {
         for (int j = 0; j < headInfo.biHeight; j++) {
-            int t = int(std::round(field[i][j] / 20) * 20);
+            int t = correlation(field[i][j]);
             out << dic[t];
         }
     }
@@ -406,7 +411,7 @@ void BMP::getCodeShannonFano( std::ofstream &out )
 
     for ( int i = 0; i < headInfo.biWidth; i++ ) {
         for (int j = 0; j < headInfo.biHeight; j++) {
-            int t = int(std::round(field[i][j] / 20) * 20);
+            int t = correlation(field[i][j]);
             out << dic[t];
         }
     }
@@ -465,7 +470,7 @@ void BMP::getCodeHafman( std::ofstream &out)
 
     for ( int i = 0; i < headInfo.biWidth; i++ ) {
         for (int j = 0; j < headInfo.biHeight; j++) {
-            int t = int(std::round(field[i][j] / 20) * 20);
+            int t = correlation(field[i][j]);
             out << dic[t];
         }
     }
