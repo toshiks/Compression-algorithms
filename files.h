@@ -51,7 +51,11 @@ namespace bitMap {
     };
 }
 
-enum typeOfCode{UNIFORM, HUFFMAN, SHENNON};
+enum typeOfCode{
+    UNIFORM,
+    HUFFMAN,
+    SHENNON
+};
 
 class BMP{
 private:
