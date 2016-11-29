@@ -5,31 +5,32 @@ using namespace std;
 
 int main()
 {
-    BMP file( (char *)"D:\\Git\\INF\\src.bmp" );
+    setlocale(LC_ALL, "RUS");
+    BMP file( (char *)"D:\\Git\\INF\\src8.bmp" );
     ofstream out("D:\\Git\\INF\\output.txt");
     file.writeInfo();
-    //file.writeMatrix();
+    file.writeMatrix();
     file.writeFrequency();
     cout << "\nEntropy: " << file.getEntropy() << endl;
-    cout << "Minimal Binary Code: " << file.getminBinaryCode() << endl;
-    file.getUniformCodes(out);
-    file.getCodeShannonFano(out);
-    file.getCodeHafman(out);
-    cout << "Size Uniform Codes: " << file.byteSizeCodeUniform() << endl;
-    cout << "Size Code Shennon:  " << file.byteSizeCodeShannonFano() << endl;
-    cout << "Size Code Huffman:   " << file.byteSizeCodeHafman() << endl << endl;
-	cout << "Compression ratio Shennon's code: " << file.byteSizeCodeUniform() / file.byteSizeCodeShannonFano() << endl;
-	cout << "Compression ratio Huffman's code: " << file.byteSizeCodeUniform() / file.byteSizeCodeHafman() << endl;
-
+    file.writeCodesOfMessage(HUFFMAN);
+    file.writeCodesOfMessage(UNIFORM);
+    file.writeCodesOfMessage(SHENNON);
+    file.writeCodesOfSymbols(HUFFMAN);
+    file.writeCodesOfSymbols(UNIFORM);
+    file.writeCodesOfSymbols(SHENNON);
+    cout << "Size Uniform Codes: " << file.byteSizeCode(UNIFORM)<< endl;
+    cout << "Size Code Shennon:  " << file.byteSizeCode(SHENNON)<< endl;
+    cout << "Size Code Huffman:  " << file.byteSizeCode(HUFFMAN)<< endl << endl;
+	cout << "Compression ratio Shennon's code: " << file.byteSizeCode(UNIFORM) / file.byteSizeCode(SHENNON) << endl;
+	cout << "Compression ratio Huffman's code: " << file.byteSizeCode(UNIFORM) / file.byteSizeCode(HUFFMAN) << endl;
     long double shennonSize, huffmanSize, uniformSize;
-    uniformSize = file.sizeCodeUniform();
-    shennonSize = file.sizeCodeShannonFano();
-    huffmanSize = file.sizeCodeHafman();
+    uniformSize = file.sizeCode(UNIFORM);
+    shennonSize = file.sizeCode(SHENNON);
+    huffmanSize = file.sizeCode(HUFFMAN);
     cout << uniformSize << ' ' << shennonSize << ' ' << huffmanSize << '\n';
-
     cout << "Redundancy Shennon's code: " << (uniformSize-shennonSize)/shennonSize << endl;
     cout << "Redundancy Huffman's code: " << (uniformSize-huffmanSize)/huffmanSize << endl;
-
+    out.close();
     //system("pause>>null");
     return 0;
 }
