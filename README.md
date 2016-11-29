@@ -10,13 +10,16 @@
 BMP( char * fileName )
 
 //This method writes value of pixel of image
-void writeMatrix(); 
+void writeMatrix( std::ofstream *out = nullptr ); 
 
 //This method writes Infomarion of Header of image
-void writeInfo();   
+void writeInfo( std::ofstream *out = nullptr );   
 
-/*This method write shades of image and their frequency of occurrence in file(considering quantization X=round(X/20)*20)*/
-void writeFrequency(); 
+//This method write shades of image and their frequency of occurrence (considering quantization X=round(X/20)*20)
+void writeFrequency( std::ofstream *out = nullptr ); 
+
+//This method write shades of image and their probability frequency of occurrence (considering quantization 
+void writeFrequencyProbability ( std::ofstream *out = nullptr );    
 ```
 **These methods return Infomarion of Header:**
 ----------------
@@ -38,33 +41,24 @@ void writeFrequency();
 //Value of Entropy
 long double     getEntropy();
 
-//The minimum size of the binary code for encoding
-int             getminBinaryCode(); 
+//The average length of code
+long double     byteSizeCode ( typeOfCode type );
 
-//Write into file uniform code
-void            getUniformCodes( std::ofstream &out );
+//Length of the message in the code
+long int        sizeCode ( typeOfCode type );
 
-//Write into file code of Shannon-Fano
-void            getCodeShannonFano( std::ofstream &out );
+//Write Codes Of Message
+void            writeCodesOfMessage ( typeOfCode type, std::ofstream *out = nullptr );
 
-//Write into file code of Huffman
-void            getCodeHafman( std::ofstream &out );
+//Write Codes Of Symbols
+void            writeCodesOfSymbols ( typeOfCode type, std::ofstream *out = nullptr );
+```
 
-//The average length of binary uniform code
-long double     byteSizeCodeUniform(); 
-
-//The average length of binary code of Shannon-Fano
-long double     byteSizeCodeShannonFano(); 
-
-//The average length of binary code of Huffman
-long double     byteSizeCodeHafman();
-
-//Length of the message in the uniform code
-long int        sizeCodeUniform();
-
-//Length of the message in the code of Shannon-Fano
-long int        sizeCodeShannonFano();
-
-//Length of the message in the code of Huffman
-long int        sizeCodeHafman();
+```c++
+//We can use ENUM for access to various types of codes
+enum typeOfCode{
+    UNIFORM,     //uniform code
+    HUFFMAN,     //Huffman's code 
+    SHANNON      //Code of Shannon-Fano
+};
 ```
