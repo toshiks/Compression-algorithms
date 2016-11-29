@@ -33,7 +33,7 @@ namespace bitMap {
         long double     frq;
         std::string     uniformCodes;
         std::string     codeShannonFano;
-        std::string     codeHafman;
+        std::string     codeHuffman;
     };
 
     struct HuffmanTree{
@@ -47,14 +47,14 @@ namespace bitMap {
 
     struct Alphabet{
         int             num;
-        GreyCount       *simbol;
+        GreyCount       *symbol;
     };
 }
 
 enum typeOfCode{
     UNIFORM,
     HUFFMAN,
-    SHENNON
+    SHANNON
 };
 
 class BMP{

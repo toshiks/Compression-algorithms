@@ -75,15 +75,15 @@ BMP::BMP( char * fileName )
 
     alphabet         = new Alphabet;
     alphabet->num    = coun;
-    alphabet->simbol = new GreyCount [ alphabet->num ];
+    alphabet->symbol = new GreyCount [ alphabet->num ];
 
     coun    = 0;
     int sum = 0;
 
     for ( auto i = 0; i < 256; i++ ){
         if ( shades[i] != 0 ) {
-            alphabet->simbol[ coun ].tone = ( unsigned char )i;
-            alphabet->simbol[ coun ].num  = shades[ i ];
+            alphabet->symbol[ coun ].tone = ( unsigned char )i;
+            alphabet->symbol[ coun ].num  = shades[ i ];
             sum += shades[ i ];
             coun++;
         }
@@ -94,17 +94,17 @@ BMP::BMP( char * fileName )
     entropy = 0;
 
     for ( auto i = 0; i < alphabet->num; i++ ) {
-        alphabet->simbol[ i ].frq = ( long double )alphabet->simbol[ i ].num / ( long double )sum;
+        alphabet->symbol[ i ].frq = ( long double )alphabet->symbol[ i ].num / ( long double )sum;
 
-        entropy = entropy + ( alphabet->simbol[ i ].frq * std::log2( alphabet->simbol[ i ].frq ) );
+        entropy = entropy + ( alphabet->symbol[ i ].frq * std::log2( alphabet->symbol[ i ].frq ) );
     }
 
     entropy *= ( -1 );
 
-    std::sort( alphabet->simbol, alphabet->simbol+alphabet->num, []( GreyCount a, GreyCount b ){ return a.frq < b.frq; } );
+    std::sort( alphabet->symbol, alphabet->symbol+alphabet->num, []( GreyCount a, GreyCount b ){ return a.frq < b.frq; } );
 
     for ( int i = 0; i < alphabet->num; i++ ){
-        alphabet->simbol[ i ].uniformCodes = getUmCode( i, minBinaryCode );
+        alphabet->symbol[ i ].uniformCodes = getUmCode( i, minBinaryCode );
     }
 
     buildingCodeShannonFano( '4', "-", 0, alphabet->num - 1 );
@@ -121,20 +121,20 @@ void BMP::buildingCodeShannonFano(char lit, std::string code, int left, int righ
     }
 
     if ( left == right ) {
-        alphabet->simbol[ left ].codeShannonFano = code;
+        alphabet->symbol[ left ].codeShannonFano = code;
     } else {
         long double midFrq = 0;
         int medium         = left;
         long double temp   = 0;
 
         for ( auto i = left; i < right; i++ ){
-            midFrq += alphabet->simbol[ i ].frq;
+            midFrq += alphabet->symbol[ i ].frq;
         }
 
         midFrq /= 2;
 
-        while ( medium < right && temp + alphabet->simbol[ medium ].frq < midFrq){
-            temp += alphabet->simbol[ medium ].frq;
+        while ( medium < right && temp + alphabet->symbol[ medium ].frq < midFrq){
+            temp += alphabet->symbol[ medium ].frq;
             medium++;
         }
 
@@ -156,7 +156,7 @@ void BMP::fun( bitMap::HuffmanTree *node, std::string &code)
     }
 
     if ( node->posAlb != -1 ) {
-        alphabet->simbol[ node->posAlb ].codeHafman = code;
+        alphabet->symbol[ node->posAlb ].codeHuffman = code;
     }
 
 
@@ -187,8 +187,8 @@ void BMP::buildingCodeHuffman()
     priority_queue< HuffmanTree*, vector< HuffmanTree* >, decltype( comp ) > qu(comp);
 
     for ( auto i = 0; i < alphabet->num; i++ ){
-        HuffmanTree *obj = new HuffmanTree( alphabet->simbol[ i ].frq, i, nullptr, nullptr );
-        alphabet->simbol[ i ].codeHafman = "";
+        HuffmanTree *obj = new HuffmanTree( alphabet->symbol[ i ].frq, i, nullptr, nullptr );
+        alphabet->symbol[ i ].codeHuffman = "";
         qu.push( obj );
     }
 
@@ -215,7 +215,7 @@ BMP::~BMP()
 {
     using namespace bitMap;
 
-    delete[] alphabet->simbol;
+    delete[] alphabet->symbol;
     delete[] alphabet;
 
     for ( int i = 0; i < headInfo.biWidth; i++ ){
@@ -304,8 +304,8 @@ void BMP::writeCodesOfSymbols(  typeOfCode type, std::ofstream *out ) {
     string title;
 
     switch( type ){
-        case SHENNON:
-            title = "Shennon's Code of symbols: \n";
+        case SHANNON:
+            title = "Shannon's Code of symbols: \n";
             break;
         case UNIFORM:
             title = "Uniform Code of symbols: \n";
@@ -321,9 +321,9 @@ void BMP::writeCodesOfSymbols(  typeOfCode type, std::ofstream *out ) {
         cout << title;
     }
 
-    for_each(alphabet->simbol, alphabet->simbol+alphabet->num, [&](bitMap::GreyCount a) {
+    for_each(alphabet->symbol, alphabet->symbol+alphabet->num, [&](bitMap::GreyCount a) {
         switch (type) {
-            case SHENNON:
+            case SHANNON:
                 if (flag) {
                     (*out) << setw(8) << (int) a.tone << ": " << a.codeShannonFano << '\n';
                 } else {
@@ -339,9 +339,9 @@ void BMP::writeCodesOfSymbols(  typeOfCode type, std::ofstream *out ) {
                 break;
             case HUFFMAN:
                 if (flag) {
-                    (*out) << setw(8) << (int) a.tone << ": " << a.codeHafman << '\n';
+                    (*out) << setw(8) << (int) a.tone << ": " << a.codeHuffman << '\n';
                 } else {
-                    cout << setw(8) << (int) a.tone << ": " << a.codeHafman << '\n';
+                    cout << setw(8) << (int) a.tone << ": " << a.codeHuffman << '\n';
                 }
                 break;
         }
@@ -357,7 +357,7 @@ void BMP::writeFrequencyProbability( std::ofstream *out )
     else
         flag = false;
 
-    for_each( alphabet->simbol, alphabet->simbol+alphabet->num, [ & ]( bitMap::GreyCount a ){
+    for_each( alphabet->symbol, alphabet->symbol+alphabet->num, [ & ]( bitMap::GreyCount a ){
         if ( flag ) {
             ( *out ) << setw( 8 ) << fixed << setprecision( 5 ) << ( int ) a.tone << ": " << a.frq << endl;
         } else {
@@ -376,7 +376,7 @@ void BMP::writeFrequency( std::ofstream *out )
         flag = false;
     }
 
-    for_each(alphabet->simbol, alphabet->simbol+alphabet->num, [ & ]( bitMap::GreyCount a ){
+    for_each(alphabet->symbol, alphabet->symbol+alphabet->num, [ & ]( bitMap::GreyCount a ){
         if ( flag ) {
             (*out) << setw( 8 ) << ( int ) a.tone << ": " << a.num << endl;
         } else {
@@ -439,7 +439,7 @@ void BMP::writeInfo( std::ofstream *out ) {
     }
 }
 
-unsigned long   BMP::getBitSize()
+unsigned long BMP::getBitSize()
 {
     return head.bfSize;
 }
@@ -508,22 +508,22 @@ void BMP::writeCodesOfMessage( typeOfCode type, std::ofstream *out ) {
 
     string title;
     switch ( type ) {
-        case SHENNON:
-            title = "Shennon's Code of message: \n";
+        case SHANNON:
+            title = "Shannon's Code of message: \n";
             for ( auto i = 0; i < alphabet->num; i++ ) {
-                dic.insert( make_pair( ( int ) alphabet->simbol[ i ].tone, alphabet->simbol[ i ].codeShannonFano));
+                dic.insert( make_pair( ( int ) alphabet->symbol[ i ].tone, alphabet->symbol[ i ].codeShannonFano));
             }
             break;
         case UNIFORM:
             title = "Uniform Code of message: \n";
             for ( auto i = 0; i < alphabet->num; i++ ) {
-                dic.insert( make_pair( ( int ) alphabet->simbol[ i ].tone, alphabet->simbol[ i ].uniformCodes));
+                dic.insert( make_pair( ( int ) alphabet->symbol[ i ].tone, alphabet->symbol[ i ].uniformCodes));
             }
             break;
         case HUFFMAN:
             title = "Huffman's Code of message: \n";
             for ( auto i = 0; i < alphabet->num; i++ ) {
-                dic.insert( make_pair( ( int ) alphabet->simbol[ i ].tone, alphabet->simbol[ i ].codeHafman));
+                dic.insert( make_pair( ( int ) alphabet->symbol[ i ].tone, alphabet->symbol[ i ].codeHuffman));
             }
             break;
     }
@@ -559,19 +559,19 @@ long int BMP::sizeCode( typeOfCode type )
     long int temp = 0;
 
     switch( type ){
-        case SHENNON:
-            for_each( alphabet->simbol, alphabet->simbol+alphabet->num, [ & ]( GreyCount a ){
+        case SHANNON:
+            for_each( alphabet->symbol, alphabet->symbol+alphabet->num, [ & ]( GreyCount a ){
                 temp += ( a.num * a.codeShannonFano.size() );
             });
             break;
         case UNIFORM:
-            for_each( alphabet->simbol, alphabet->simbol+alphabet->num, [ & ]( GreyCount a ){
+            for_each( alphabet->symbol, alphabet->symbol+alphabet->num, [ & ]( GreyCount a ){
                 temp += ( a.num * a.uniformCodes.size() );
             });
             break;
         case HUFFMAN:
-            for_each( alphabet->simbol, alphabet->simbol+alphabet->num, [ & ]( GreyCount a ){
-                temp += ( a.num * a.codeHafman.size() );
+            for_each( alphabet->symbol, alphabet->symbol+alphabet->num, [ & ]( GreyCount a ){
+                temp += ( a.num * a.codeHuffman.size() );
             });
             break;
     }
@@ -586,19 +586,19 @@ long double BMP::byteSizeCode( typeOfCode type )
     long double temp = 0;
 
     switch( type ){
-        case SHENNON:
-            for_each( alphabet->simbol, alphabet->simbol+alphabet->num, [ & ]( GreyCount a ){
+        case SHANNON:
+            for_each( alphabet->symbol, alphabet->symbol+alphabet->num, [ & ]( GreyCount a ){
                 temp += ( a.frq * a.codeShannonFano.size() );
             });
             break;
         case UNIFORM:
-            for_each( alphabet->simbol, alphabet->simbol+alphabet->num, [ & ]( GreyCount a ){
+            for_each( alphabet->symbol, alphabet->symbol+alphabet->num, [ & ]( GreyCount a ){
                 temp += ( a.frq * a.uniformCodes.size() );
             });
             break;
         case HUFFMAN:
-            for_each( alphabet->simbol, alphabet->simbol+alphabet->num, [ & ]( GreyCount a ){
-                temp += ( a.frq * a.codeHafman.size() );
+            for_each( alphabet->symbol, alphabet->symbol+alphabet->num, [ & ]( GreyCount a ){
+                temp += ( a.frq * a.codeHuffman.size() );
             });
             break;
     }
