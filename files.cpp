@@ -325,23 +325,23 @@ void BMP::writeCodesOfSymbols(  typeOfCode type, std::ofstream *out ) {
         switch (type) {
             case SHANNON:
                 if (flag) {
-                    (*out) << setw(8) << (int) a.tone << ": " << a.codeShannonFano << '\n';
+                    (*out) << setw(3) << (int) a.tone << ": " << a.codeShannonFano << '\n';
                 } else {
-                    cout << setw(8) << (int) a.tone << ": " << a.codeShannonFano << '\n';
+                    cout << setw(3) << (int) a.tone << ": " << a.codeShannonFano << '\n';
                 }
                 break;
             case UNIFORM:
                 if (flag) {
-                    (*out) << setw(8) << (int) a.tone << ": " << a.uniformCodes << '\n';
+                    (*out) << setw(3) << (int) a.tone << ": " << a.uniformCodes << '\n';
                 } else {
-                    cout << setw(8) << (int) a.tone << ": " << a.uniformCodes << '\n';
+                    cout << setw(3) << (int) a.tone << ": " << a.uniformCodes << '\n';
                 };
                 break;
             case HUFFMAN:
                 if (flag) {
-                    (*out) << setw(8) << (int) a.tone << ": " << a.codeHuffman << '\n';
+                    (*out) << setw(3) << (int) a.tone << ": " << a.codeHuffman << '\n';
                 } else {
-                    cout << setw(8) << (int) a.tone << ": " << a.codeHuffman << '\n';
+                    cout << setw(3) << (int) a.tone << ": " << a.codeHuffman << '\n';
                 }
                 break;
         }
