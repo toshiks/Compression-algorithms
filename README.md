@@ -1,4 +1,4 @@
- It's Class for Parse BMP and bulding code of Huffman, Shennon and Uniform code. 
+Class for Parse BMP and bulding code of Huffman, Shennon and Uniform code. 
 =======
 
 **Metods of class:**
